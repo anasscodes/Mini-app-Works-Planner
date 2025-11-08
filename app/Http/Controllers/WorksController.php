@@ -12,7 +12,8 @@ class WorksController extends Controller
      */
     public function index()
     {
-        //
+        $works = Works::all();
+        return view('works.index', compact('works'));
     }
 
     /**
@@ -20,7 +21,8 @@ class WorksController extends Controller
      */
     public function create()
     {
-        //
+        return view('works.create');
+        
     }
 
     /**
@@ -28,7 +30,16 @@ class WorksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $validated = $request->validate([
+            'date' => 'required|date',
+            'domaine' => 'required|string|max:255',
+            'status' => 'required|in:work,dispo',
+            'note' => 'nullable|string',
+        ]);
+
+        Works::create($validated);
+
+        return redirect()->route('works.index')->with('success', 'Work day added!');
     }
 
     /**
@@ -36,7 +47,8 @@ class WorksController extends Controller
      */
     public function show(string $id)
     {
-        //
+           $work = Works::findOrFail($id);
+        return view('works.show', compact('work'));
     }
 
     /**
@@ -44,7 +56,8 @@ class WorksController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $work = Works::findOrFail($id);
+        return view('works.edit', compact('work'));
     }
 
     /**
@@ -52,7 +65,17 @@ class WorksController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+          $validated = $request->validate([
+        'date' => 'required|date',
+        'domaine' => 'required|string|max:255',
+        'status' => 'required|in:work,dispo',
+        'note' => 'nullable|string',
+    ]);
+
+    $work = Works::findOrFail($id);
+    $work->update($validated);
+
+    return redirect()->route('works.index')->with('success', 'Work updated successfully!');
     }
 
     /**
@@ -60,6 +83,9 @@ class WorksController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $work = Works::findOrFail($id);
+            $work->delete();
+
+            return redirect()->route('works.index')->with('success', 'Work deleted successfully!');
     }
 }
